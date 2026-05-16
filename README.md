@@ -1,18 +1,12 @@
-# \---
-
-# title: FoodCast
-
-# emoji: 🌱
-
-# colorFrom: green
-
-# colorTo: blue
-
-# sdk: docker
-
-# pinned: false
-
-# \---
+---
+title: FoodCast
+emoji: 🌱
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+license: mit
+---
 
 # 🌱 FoodCast — AI Donation Forecasting Platform
 
@@ -133,18 +127,7 @@ All models in `predict.py` are modular — replace function bodies with your tra
 
 Add to the top of your `README.md` for Hugging Face:
 
-```yaml
----
-title: FoodCast
-emoji: 🌱
-colorFrom: green
-colorTo: teal
-sdk: streamlit
-sdk\_version: 1.32.0
-app\_file: app.py
-pinned: false
----
-```
+
 
 \---
 
@@ -162,4 +145,3 @@ pinned: false
 ## 📄 License
 
 MIT © 2024 FoodCast. Built with ❤️ for social impact.
-
