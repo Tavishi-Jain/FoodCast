@@ -1,0 +1,426 @@
+/* ============================================================
+   FoodCast — Dark Glassmorphism Design System
+   Primary: #00C897  Secondary: #FFC857  Alert: #FF5A5F
+   Background: #0B1020  Text: #FFFFFF
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Root Variables ── */
+:root {
+  --primary:    #00C897;
+  --secondary:  #FFC857;
+  --alert:      #FF5A5F;
+  --bg:         #0B1020;
+  --bg2:        #111827;
+  --glass:      rgba(255,255,255,0.04);
+  --glass-b:    rgba(255,255,255,0.08);
+  --text:       #FFFFFF;
+  --muted:      rgba(255,255,255,0.55);
+  --radius:     16px;
+  --radius-sm:  10px;
+  --glow:       0 0 40px rgba(0,200,151,0.15);
+}
+
+/* ── Base ── */
+html, body, [class*="css"] {
+  font-family: 'Space Grotesk', sans-serif !important;
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.stApp {
+  background: radial-gradient(ellipse at 20% 10%, rgba(0,200,151,0.07) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(255,200,87,0.05) 0%, transparent 50%),
+              var(--bg) !important;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+[data-testid="stSidebar"] {
+  background: rgba(11,16,32,0.92) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(0,200,151,0.15) !important;
+}
+
+[data-testid="stSidebar"] .stMarkdown h1,
+[data-testid="stSidebar"] .stMarkdown h2,
+[data-testid="stSidebar"] .stMarkdown h3 {
+  color: var(--primary) !important;
+}
+
+/* ── Sidebar Radio (Navigation) ── */
+[data-testid="stSidebar"] .stRadio > div {
+  gap: 4px !important;
+}
+
+[data-testid="stSidebar"] .stRadio label {
+  background: var(--glass) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  color: var(--muted) !important;
+}
+
+[data-testid="stSidebar"] .stRadio label:hover {
+  background: rgba(0,200,151,0.1) !important;
+  border-color: rgba(0,200,151,0.3) !important;
+  color: var(--text) !important;
+}
+
+/* ── Glass Cards ── */
+.glass-card {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-b) !important;
+  border-radius: var(--radius) !important;
+  padding: 24px !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,200,151,0.4), transparent);
+}
+
+.glass-card:hover {
+  border-color: rgba(0,200,151,0.3) !important;
+  box-shadow: var(--glow) !important;
+  transform: translateY(-2px);
+}
+
+/* ── KPI Metric Cards ── */
+.kpi-card {
+  background: linear-gradient(135deg, rgba(0,200,151,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(0,200,151,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 30px rgba(0,200,151,0.2);
+  transform: translateY(-3px);
+}
+
+.kpi-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.kpi-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+.kpi-delta {
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.kpi-delta.positive { color: var(--primary); }
+.kpi-delta.negative { color: var(--alert); }
+
+/* ── Alert Badges ── */
+.alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.alert-badge.danger {
+  background: rgba(255,90,95,0.15);
+  border: 1px solid rgba(255,90,95,0.4);
+  color: var(--alert);
+}
+
+.alert-badge.warning {
+  background: rgba(255,200,87,0.15);
+  border: 1px solid rgba(255,200,87,0.4);
+  color: var(--secondary);
+}
+
+.alert-badge.success {
+  background: rgba(0,200,151,0.15);
+  border: 1px solid rgba(0,200,151,0.4);
+  color: var(--primary);
+}
+
+/* ── Buttons ── */
+.stButton > button {
+  background: linear-gradient(135deg, var(--primary), #00a87a) !important;
+  color: #0B1020 !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 700 !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 0.9rem !important;
+  padding: 10px 28px !important;
+  transition: all 0.25s ease !important;
+  letter-spacing: 0.02em !important;
+}
+
+.stButton > button:hover {
+  box-shadow: 0 6px 30px rgba(0,200,151,0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Secondary button (outline) */
+.btn-secondary > button {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: 1.5px solid var(--primary) !important;
+}
+
+.btn-secondary > button:hover {
+  background: rgba(0,200,151,0.1) !important;
+}
+
+/* ── Inputs ── */
+.stTextInput > div > div > input,
+.stNumberInput > div > div > input,
+.stSelectbox > div > div {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-b) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text) !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stSelectbox > div > div:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(0,200,151,0.15) !important;
+}
+
+/* ── Sliders ── */
+.stSlider > div > div > div > div {
+  background: var(--primary) !important;
+}
+
+/* ── File uploader ── */
+[data-testid="stFileUploader"] {
+  background: var(--glass) !important;
+  border: 2px dashed rgba(0,200,151,0.35) !important;
+  border-radius: var(--radius) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-testid="stFileUploader"]:hover {
+  border-color: var(--primary) !important;
+  background: rgba(0,200,151,0.05) !important;
+}
+
+/* ── DataFrame / Table ── */
+.stDataFrame {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-b) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden;
+}
+
+/* ── Tabs ── */
+.stTabs [data-baseweb="tab-list"] {
+  background: transparent !important;
+  border-bottom: 1px solid var(--glass-b) !important;
+  gap: 4px;
+}
+
+.stTabs [data-baseweb="tab"] {
+  background: transparent !important;
+  color: var(--muted) !important;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+}
+
+.stTabs [aria-selected="true"] {
+  background: rgba(0,200,151,0.1) !important;
+  color: var(--primary) !important;
+  border-bottom: 2px solid var(--primary) !important;
+}
+
+/* ── Progress bars ── */
+.stProgress > div > div {
+  background: linear-gradient(90deg, var(--primary), #00ffcc) !important;
+  border-radius: 100px !important;
+}
+
+/* ── Metrics ── */
+[data-testid="stMetric"] {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-b) !important;
+  border-radius: var(--radius) !important;
+  padding: 16px 20px !important;
+}
+
+[data-testid="stMetricValue"] {
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+}
+
+[data-testid="stMetricDelta"] svg { display: none; }
+
+/* ── Expanders ── */
+.streamlit-expanderHeader {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-b) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Section Headers ── */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.section-sub {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+/* ── Hero ── */
+.hero-gradient {
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,200,151,0.2) 0%, transparent 60%);
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,200,151,0.12);
+  border: 1px solid rgba(0,200,151,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #ffffff 0%, var(--primary) 60%, #00ffcc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.65;
+}
+
+/* ── Dividers ── */
+hr {
+  border: none !important;
+  border-top: 1px solid var(--glass-b) !important;
+  margin: 24px 0 !important;
+}
+
+/* ── Info / Success / Warning boxes ── */
+.stAlert {
+  border-radius: var(--radius-sm) !important;
+  border: none !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,200,151,0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ── Spinner / Loading ── */
+.stSpinner > div {
+  border-top-color: var(--primary) !important;
+}
+
+/* ── Plotly chart container ── */
+.js-plotly-plot .plotly {
+  border-radius: var(--radius) !important;
+}
+
+/* ── Tag chips ── */
+.tag-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin: 2px;
+}
+
+.tag-food     { background: rgba(0,200,151,0.15); color: var(--primary); border: 1px solid rgba(0,200,151,0.3); }
+.tag-alert    { background: rgba(255,90,95,0.15); color: var(--alert); border: 1px solid rgba(255,90,95,0.3); }
+.tag-warning  { background: rgba(255,200,87,0.15); color: var(--secondary); border: 1px solid rgba(255,200,87,0.3); }
+
+/* ── Model comparison table ── */
+.model-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-b);
+  margin-bottom: 8px;
+  background: var(--glass);
+  transition: all 0.2s;
+}
+
+.model-row:hover {
+  border-color: rgba(0,200,151,0.3);
+  background: rgba(0,200,151,0.05);
+}
+
+.model-row.best {
+  border-color: var(--primary) !important;
+  background: rgba(0,200,151,0.08) !important;
+  box-shadow: var(--glow);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2rem; }
+  .kpi-value  { font-size: 1.6rem; }
+}
