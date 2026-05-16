@@ -82,9 +82,10 @@ def render():
             mode="lines+markers", line=dict(color=SECONDARY, width=2.5),
             marker=dict(size=5, color=SECONDARY), name="Forecast"
         ))
-        fig.update_layout(**BASE_LAYOUT, height=300,
-                          yaxis=dict(gridcolor=GRID, tickfont=dict(color=MUTED)),
-                          xaxis=dict(gridcolor=GRID, tickfont=dict(color=MUTED)))
+        # FIX: split update_layout and axis calls to avoid duplicate key conflict with BASE_LAYOUT
+        fig.update_layout(**BASE_LAYOUT, height=300)
+        fig.update_yaxes(gridcolor=GRID, tickfont=dict(color=MUTED))
+        fig.update_xaxes(gridcolor=GRID, tickfont=dict(color=MUTED))
         st.plotly_chart(fig, use_container_width=True)
 
     # ── Breakdown charts ──────────────────────────

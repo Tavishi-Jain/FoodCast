@@ -201,7 +201,8 @@ def _metric_bar(comp: pd.DataFrame, metric: str, prefix: str = "", suffix: str =
         textfont=dict(color="#FFFFFF", size=11),
         hovertemplate=f"<b>%{{x}}</b><br>{metric}: {prefix}%{{y:,.1f}}{suffix}<extra></extra>"
     ))
-    fig.update_layout(**BASE_LAYOUT, height=280,
-                      yaxis=dict(gridcolor=GRID, tickprefix=prefix, ticksuffix=suffix, tickfont=dict(color=MUTED)),
-                      xaxis=dict(gridcolor=GRID, tickfont=dict(color=MUTED)))
+    # FIX: split update_layout and axis calls to avoid duplicate key conflict with BASE_LAYOUT
+    fig.update_layout(**BASE_LAYOUT, height=280)
+    fig.update_yaxes(gridcolor=GRID, tickprefix=prefix, ticksuffix=suffix, tickfont=dict(color=MUTED))
+    fig.update_xaxes(gridcolor=GRID, tickfont=dict(color=MUTED))
     return fig
