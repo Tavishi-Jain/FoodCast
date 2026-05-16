@@ -109,8 +109,9 @@ def donation_forecast_chart(
         ))
 
     fig = _apply_base(fig, title)
-    fig.update_xaxis(showgrid=True)
-    fig.update_yaxis(showgrid=True, tickprefix="₹", tickformat=",.0f")
+    # FIX: use update_xaxes/update_yaxes (plural) — singular methods don't exist
+    fig.update_xaxes(showgrid=True)
+    fig.update_yaxes(showgrid=True, tickprefix="₹", tickformat=",.0f")
     return fig
 
 
@@ -140,7 +141,7 @@ def monthly_donations_bar(df: pd.DataFrame, title: str = "Monthly Donations") ->
         annotation_font_color=SECONDARY
     )
     fig = _apply_base(fig, title)
-    fig.update_yaxis(tickprefix="₹", tickformat=",.0f")
+    fig.update_yaxes(tickprefix="₹", tickformat=",.0f")
     return fig
 
 
@@ -160,7 +161,8 @@ def donor_trend_chart(df: pd.DataFrame, title: str = "Donor Trends") -> go.Figur
     ))
 
     fig = _apply_base(fig, title)
-    fig.update_yaxis(tickformat=",")
+    # FIX: use update_yaxes (plural)
+    fig.update_yaxes(tickformat=",")
     return fig
 
 
@@ -225,7 +227,7 @@ def model_rmse_bar(comparison_df: pd.DataFrame) -> go.Figure:
         hovertemplate="<b>%{x}</b><br>RMSE: ₹%{y:,.0f}<extra></extra>"
     ))
     fig = _apply_base(fig, "RMSE Comparison (lower = better)", 300)
-    fig.update_yaxis(tickprefix="₹", tickformat=",.0f")
+    fig.update_yaxes(tickprefix="₹", tickformat=",.0f")
     return fig
 
 

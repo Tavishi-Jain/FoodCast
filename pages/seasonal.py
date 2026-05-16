@@ -124,9 +124,10 @@ def _monthly_spike_chart(df: pd.DataFrame, spikes: dict):
         annotation_text="Annual Average",
         annotation_font_color=SECONDARY
     )
-    fig.update_layout(**BASE_LAYOUT, height=300,
-                      yaxis=dict(gridcolor=GRID, tickprefix="₹", tickformat=",.0f", tickfont=dict(color=MUTED)),
-                      xaxis=dict(gridcolor=GRID, tickfont=dict(color=MUTED)))
+    # FIX: split update_layout and axis calls to avoid duplicate key conflict with BASE_LAYOUT
+    fig.update_layout(**BASE_LAYOUT, height=300)
+    fig.update_yaxes(gridcolor=GRID, tickprefix="₹", tickformat=",.0f", tickfont=dict(color=MUTED))
+    fig.update_xaxes(gridcolor=GRID, tickfont=dict(color=MUTED))
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -148,7 +149,8 @@ def _roi_forecast_chart(df: pd.DataFrame, spikes: dict):
         hovertemplate="<b>%{x}</b><br>ROI: %{y:+.1f}%<extra></extra>"
     ))
     fig.add_hline(y=0, line=dict(color=MUTED, width=1))
-    fig.update_layout(**BASE_LAYOUT, height=300,
-                      yaxis=dict(gridcolor=GRID, ticksuffix="%", tickfont=dict(color=MUTED)),
-                      xaxis=dict(gridcolor=GRID, tickfont=dict(color=MUTED)))
+    # FIX: split update_layout and axis calls to avoid duplicate key conflict with BASE_LAYOUT
+    fig.update_layout(**BASE_LAYOUT, height=300)
+    fig.update_yaxes(gridcolor=GRID, ticksuffix="%", tickfont=dict(color=MUTED))
+    fig.update_xaxes(gridcolor=GRID, tickfont=dict(color=MUTED))
     st.plotly_chart(fig, use_container_width=True)

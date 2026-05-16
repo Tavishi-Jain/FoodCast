@@ -57,6 +57,12 @@ with st.sidebar:
 
     st.markdown('<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Navigation</div>', unsafe_allow_html=True)
 
+    # FIX: resolve nav_target BEFORE the radio widget is instantiated
+    if "nav_target" in st.session_state:
+        target = st.session_state.pop("nav_target")
+        if target in NAV_ITEMS:
+            st.session_state["nav_radio"] = target
+
     page_label = st.radio(
         "nav", list(NAV_ITEMS.keys()),
         label_visibility="collapsed",
@@ -115,21 +121,21 @@ def _render_landing():
     </div>
     """, unsafe_allow_html=True)
 
-    # CTA buttons
+    # CTA buttons — FIX: use nav_target instead of directly setting nav_radio
     c1, c2, c3 = st.columns([1,1,1])
     with c1:
         if st.button("📂 Upload Your Data", use_container_width=True):
-            st.session_state["nav_radio"] = "📂  Upload Dashboard"
+            st.session_state["nav_target"] = "📂  Upload Dashboard"
             st.rerun()
     with c2:
         if st.button("🗂️ Try Demo Dataset", use_container_width=True):
             st.session_state["df"] = load_demo_data()
             st.session_state["data_source"] = "Demo Dataset"
-            st.session_state["nav_radio"] = "📈  Donation Forecast"
+            st.session_state["nav_target"] = "📈  Donation Forecast"
             st.rerun()
     with c3:
         if st.button("🏆 Compare Models", use_container_width=True):
-            st.session_state["nav_radio"] = "🏆  Model Comparison"
+            st.session_state["nav_target"] = "🏆  Model Comparison"
             st.rerun()
 
     st.markdown("<div style='height:48px'></div>", unsafe_allow_html=True)
