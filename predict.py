@@ -55,10 +55,10 @@ def aggregate_weekly(df: pd.DataFrame) -> pd.DataFrame:
 
 def aggregate_monthly(df: pd.DataFrame) -> pd.DataFrame:
     df["month_start"] = df["date"].dt.to_period("M").dt.to_timestamp()
-    return df.groupby("month_start").agg(
-        amount=("amount", "sum"),
-        donors=("donors", "sum")
-    ).reset_index().rename(columns={"month_start": "date"})
+    agg_dict = {"amount": "sum"}
+    if "donors" in df.columns:
+        agg_dict["donors"] = "nunique"
+    return df.groupby("month_start").agg(agg_dict).reset_index().rename(columns={"month_start": "date"})
 
 
 def forecast_arima(
