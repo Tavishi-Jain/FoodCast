@@ -6,7 +6,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 # FIX #3 — removed local re-definition of format_currency; single source of truth
-from utils.helpers import format_currency, kpi_card_html, page_header, generate_report_csv, summary_metrics, cur
+from utils.helpers import format_currency, kpi_card_html, page_header, generate_report_csv, summary_metrics
 from utils.charts import donation_forecast_chart, monthly_donations_bar, seasonal_heatmap
 from predict import preprocess_donations, forecast_arima, forecast_prophet, forecast_xgboost, forecast_lstm
 
