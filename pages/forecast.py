@@ -186,7 +186,7 @@ def render():
 
     with tab3:
         st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-        sym = cur()
+        sym = "$"
         display = fc_df.copy()
         display["forecast"] = display["forecast"].apply(lambda x: f"{sym}{x:,.0f}")
         if "lower" in display.columns:
