@@ -1,4 +1,4 @@
-```python
+
 """
 pages/upload.py — Upload Dashboard
 """
