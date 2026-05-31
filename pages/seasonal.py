@@ -47,7 +47,7 @@ def render():
         for i, spike in enumerate(spike_list[:6]):
             with cols[i % 3]:
                 uplift_color = PRIMARY if spike["uplift_pct"] > 30 else SECONDARY
-                sym = cur()
+                sym = "$"
                 st.markdown(f"""
                 <div class="glass-card" style="margin-bottom:12px">
                   <div style="font-size:1.4rem;margin-bottom:6px">🎉</div>
