@@ -4,7 +4,7 @@ pages/upload.py — Upload Dashboard
 
 import streamlit as st
 import pandas as pd
-from utils.helpers import validate_csv, normalize_columns, load_demo_data, summary_metrics, format_currency, kpi_card_html, page_header
+from utils.helpers import load_demo_data, summary_metrics, format_currency, kpi_card_html, page_header
 
 
 def render():
@@ -19,8 +19,7 @@ def render():
         <div style="font-size:2.5rem;margin-bottom:8px">📁</div>
         <div style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:6px">Drop your CSV here</div>
         <div style="font-size:0.82rem;color:rgba(255,255,255,0.5)">
-            Any CSV with a date column and a numeric column works!<br>
-            e.g. Order Date + Sales, donation_date + amount, ds + value
+            Any CSV works — you'll map your columns after upload.
         </div>
         </div>
         """, unsafe_allow_html=True)
@@ -33,24 +32,91 @@ def render():
         if st.button("🗂️ Load Demo Data", use_container_width=True):
             st.session_state["df"] = load_demo_data()
             st.session_state["data_source"] = "Demo Dataset"
-            st.success("Demo data loaded!")
+            st.rerun()
 
+    # ── Process upload ────────────────────────────
     if uploaded:
         try:
-            df = pd.read_csv(uploaded)
-            df = normalize_columns(df)
-            is_valid, errors = validate_csv(df)
-            if not is_valid:
-                for e in errors:
-                    st.error(e)
-                return
-            st.session_state["df"] = df
-            st.session_state["data_source"] = uploaded.name
-            st.success(f"✅ **{uploaded.name}** loaded — {len(df):,} rows")
+            raw_df = pd.read_csv(uploaded)
+            st.session_state["raw_df"] = raw_df
+            st.session_state["upload_name"] = uploaded.name
+            # Clear previous mapping when new file uploaded
+            st.session_state.pop("df", None)
         except Exception as ex:
-            st.error(f"Failed to parse file: {ex}")
+            st.error(f"Failed to read file: {ex}")
             return
 
+    # ── Column mapping UI ─────────────────────────
+    if "raw_df" in st.session_state and "df" not in st.session_state:
+        raw_df = st.session_state["raw_df"]
+        cols = raw_df.columns.tolist()
+
+        st.markdown("---")
+        st.markdown("### 🗂️ Map Your Columns")
+        st.markdown("Tell us which columns contain the **date** and **amount** data:")
+
+        m1, m2, m3, m4 = st.columns(4)
+
+        with m1:
+            date_col = st.selectbox("📅 Date column", options=cols,
+                index=next((i for i, c in enumerate(cols) if "date" in c.lower() or "time" in c.lower() or c.lower() == "ds"), 0))
+        with m2:
+            amount_col = st.selectbox("💰 Amount column", options=cols,
+                index=next((i for i, c in enumerate(cols) if any(k in c.lower() for k in ["amount", "sales", "revenue", "donation", "value", "price", "total"])), min(1, len(cols)-1)))
+        with m3:
+            donor_col_options = ["(none)"] + cols
+            donor_col = st.selectbox("👥 Donors column (optional)", options=donor_col_options,
+                index=next((i+1 for i, c in enumerate(cols) if "donor" in c.lower() or "count" in c.lower()), 0))
+        with m4:
+            category_col_options = ["(none)"] + cols
+            category_col = st.selectbox("🏷️ Category column (optional)", options=category_col_options,
+                index=next((i+1 for i, c in enumerate(cols) if any(k in c.lower() for k in ["category", "segment", "type", "campaign"])), 0))
+
+        if st.button("✅ Confirm Mapping & Load", use_container_width=True):
+            try:
+                df = raw_df.copy()
+
+                # Rename to internal standard names
+                rename_map = {date_col: "date", amount_col: "amount"}
+                if donor_col != "(none)":
+                    rename_map[donor_col] = "donors"
+                if category_col != "(none)" and category_col not in rename_map:
+                    rename_map[category_col] = "category"
+                df = df.rename(columns=rename_map)
+
+                # Parse date and amount
+                df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, errors="coerce")
+                df["amount"] = pd.to_numeric(
+                    df["amount"].astype(str).str.replace(r"[^\d.]", "", regex=True),
+                    errors="coerce"
+                )
+
+                # Drop rows where date or amount couldn't be parsed
+                before = len(df)
+                df = df.dropna(subset=["date", "amount"])
+                df = df[df["amount"] > 0]
+                after = len(df)
+
+                if after < 10:
+                    st.error(f"Need at least 10 valid rows. Only {after} rows had parseable date + amount values.")
+                    return
+
+                df = df.sort_values("date").reset_index(drop=True)
+                st.session_state["df"] = df
+                st.session_state["data_source"] = st.session_state.get("upload_name", "Uploaded CSV")
+
+                if before != after:
+                    st.warning(f"⚠️ {before - after} rows dropped (unparseable date/amount). {after:,} rows loaded.")
+                else:
+                    st.success(f"✅ **{st.session_state['data_source']}** loaded — {after:,} rows")
+
+                st.rerun()
+
+            except Exception as ex:
+                st.error(f"Mapping failed: {ex}")
+                return
+
+    # ── Show data if available ────────────────────
     if "df" not in st.session_state:
         st.markdown("""
         <div style="text-align:center;padding:60px;color:rgba(255,255,255,0.35)">
@@ -63,13 +129,14 @@ def render():
     df = st.session_state["df"]
     st.markdown("---")
 
+    # ── KPI cards ─────────────────────────────────
     metrics = summary_metrics(df)
     c1, c2, c3, c4 = st.columns(4)
     cards = [
         (c1, "Total Raised", format_currency(metrics["total"]), "💰", ""),
         (c2, "Total Donors", f'{int(metrics["total_donors"]):,}', "👥", ""),
         (c3, "Avg per Donor", format_currency(metrics["avg_donation"]), "🎯", ""),
-        (c4, "Peak Week", format_currency(metrics["peak_amount"]), "🚀", ""),
+        (c4, "Peak Value", format_currency(metrics["peak_amount"]), "🚀", ""),
     ]
     for col, label, val, icon, delta in cards:
         with col:
@@ -77,18 +144,7 @@ def render():
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-    with st.expander("✅ Validation Report", expanded=False):
-        checks = {
-            "Date column present": "date" in df.columns,
-            "Amount column present": "amount" in df.columns,
-            "No null dates": df["date"].isnull().sum() == 0,
-            "No null amounts": df["amount"].isnull().sum() == 0,
-            "Positive amounts": (df["amount"] > 0).all(),
-            "Sufficient rows (≥ 10)": len(df) >= 10,
-        }
-        for check, passed in checks.items():
-            st.markdown(f"{'✅' if passed else '❌'} {check}")
-
+    # ── Data preview ──────────────────────────────
     st.markdown("""
     <div class="section-title" style="margin-top:24px">Dataset Preview</div>
     <div class="section-sub">Showing first 50 rows · Source: <strong>{}</strong> · {} rows total</div>
@@ -101,11 +157,17 @@ def render():
     )
     st.dataframe(
         df[display_cols].head(50).style.format(
-            {"amount": "₹{:,.0f}", "donors": "{:,.0f}"} if "amount" in display_cols else {}
+            {"amount": "{:,.2f}", "donors": "{:,.0f}"} if "amount" in display_cols else {}
         ),
         use_container_width=True, height=320
     )
 
     st.markdown("### 📊 Column Statistics")
-    st.dataframe(df.describe().style.format("{:.1f}"), use_container_width=True)
+    st.dataframe(df.describe().style.format("{:.2f}"), use_container_width=True)
+
+    # Option to re-map columns
+    if st.button("🔄 Re-map columns / Upload new file"):
+        st.session_state.pop("df", None)
+        st.session_state.pop("raw_df", None)
+        st.rerun()
     
