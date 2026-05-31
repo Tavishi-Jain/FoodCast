@@ -1,4 +1,3 @@
-
 """
 pages/upload.py — Upload Dashboard
 """
@@ -36,16 +35,18 @@ def render():
             st.session_state.pop("raw_df", None)
             st.rerun()
 
-    # ── Process upload ────────────────────────────
+    # ── Process upload — only if new file ────────
     if uploaded:
-        try:
-            raw_df = pd.read_csv(uploaded)
-            st.session_state["raw_df"] = raw_df
-            st.session_state["upload_name"] = uploaded.name
-            st.session_state.pop("df", None)
-        except Exception as ex:
-            st.error(f"Failed to read file: {ex}")
-            return
+        current_source = st.session_state.get("data_source", "")
+        if uploaded.name != current_source:
+            try:
+                raw_df = pd.read_csv(uploaded)
+                st.session_state["raw_df"] = raw_df
+                st.session_state["upload_name"] = uploaded.name
+                st.session_state.pop("df", None)
+            except Exception as ex:
+                st.error(f"Failed to read file: {ex}")
+                return
 
     # ── Column mapping UI ─────────────────────────
     if "raw_df" in st.session_state and "df" not in st.session_state:
@@ -105,7 +106,7 @@ def render():
                 st.session_state.pop("raw_df", None)
 
                 if before != after:
-                    st.warning(f"⚠️ {before - after} rows dropped (unparseable date/amount). {after:,} rows loaded.")
+                    st.warning(f"⚠️ {before - after} rows dropped. {after:,} rows loaded.")
                 else:
                     st.success(f"✅ **{st.session_state['data_source']}** loaded — {after:,} rows")
 
@@ -128,7 +129,6 @@ def render():
     df = st.session_state["df"]
     st.markdown("---")
 
-    # ── KPI cards ─────────────────────────────────
     metrics = summary_metrics(df)
     c1, c2, c3, c4 = st.columns(4)
     cards = [
@@ -143,7 +143,6 @@ def render():
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-    # ── Data preview ──────────────────────────────
     st.markdown("""
     <div class="section-title" style="margin-top:24px">Dataset Preview</div>
     <div class="section-sub">Showing first 50 rows · Source: <strong>{}</strong> · {} rows total</div>
@@ -169,8 +168,9 @@ def render():
         st.session_state.pop("raw_df", None)
         st.rerun()
 
-          
-            
+             
+
+
      
 
 
