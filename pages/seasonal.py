@@ -107,7 +107,7 @@ def _monthly_spike_chart(df: pd.DataFrame, spikes: dict):
     values      = [float(avg_by_month.get(m, overall_mean)) for m in months]
     colors      = [PRIMARY if m in spike_months else "rgba(0,200,151,0.35)" for m in months]
 
-    sym = cur()
+    sym = "$"
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=month_names, y=values,
