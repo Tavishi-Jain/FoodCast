@@ -108,18 +108,49 @@ with st.sidebar:
 
 
 # ── Landing Page ──────────────────────────────────
-def _render_landing():
-    # Hero
-    st.markdown("""
-    <div class="hero-gradient">
-      <div class="hero-badge">🌱 AI-Powered Social Impact Analytics</div>
-      <h1 class="hero-title">Predict. Plan.<br>Maximise Impact.</h1>
-      <p class="hero-sub">
-        FoodCast uses machine learning to help NGOs, CSR teams, and fundraisers
-        forecast donations, detect droughts, and time campaigns for maximum ROI.
-      </p>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown("""
+<div class="hero-gradient" style="position:relative;overflow:hidden">
+  <canvas id="particles" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.25"></canvas>
+  <div class="hero-badge">🌱 AI-Powered Social Impact Analytics</div>
+  <h1 class="hero-title">Predict. Plan.<br>Maximise Impact.</h1>
+  <p class="hero-sub">
+    FoodCast uses machine learning to help NGOs, CSR teams, and fundraisers
+    forecast donations, detect droughts, and time campaigns for maximum ROI.
+  </p>
+</div>
+<script>
+(function(){
+  const c = document.getElementById('particles');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  function resize(){ c.width = c.parentElement.offsetWidth; c.height = c.parentElement.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  const pts = Array.from({length:55}, () => ({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5,
+    r: Math.random()*2+1
+  }));
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pts.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>c.width) p.vx*=-1;
+      if(p.y<0||p.y>c.height) p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28);
+      ctx.fillStyle='#00C897'; ctx.fill();
+    });
+    pts.forEach((a,i) => pts.slice(i+1).forEach(b => {
+      const dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(0,200,151,${0.15*(1-d/100)})`; ctx.lineWidth=0.8; ctx.stroke(); }
+    }));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+""", unsafe_allow_html=True)
 
     # CTA buttons — FIX: use nav_target instead of directly setting nav_radio
     c1, c2, c3 = st.columns([1,1,1])
