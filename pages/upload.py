@@ -41,24 +41,20 @@ def render():
 
     # ── Process upload ────────────────────────────
     if uploaded:
-        try:
-            df = pd.read_csv(uploaded)
-            # Auto-detect date column (case-insensitive)
-            date_col = next((c for c in df.columns if c.strip().lower() == "date"), None)
-            if date_col:
-                df.rename(columns={date_col: "date"}, inplace=True)
-                df["date"] = pd.to_datetime(df["date"])
-            is_valid, errors = validate_csv(df)
-            if not is_valid:
-                for e in errors:
-                    st.error(e)
-                return
-            st.session_state["df"] = df
-            st.session_state["data_source"] = uploaded.name
-            st.success(f"✅ **{uploaded.name}** loaded — {len(df):,} rows")
-        except Exception as ex:
-            st.error(f"Failed to parse file: {ex}")
+    try:
+        df = pd.read_csv(uploaded)
+        df = normalize_columns(df)   # ← add this line
+        is_valid, errors = validate_csv(df)
+        if not is_valid:
+            for e in errors:
+                st.error(e)
             return
+        st.session_state["df"] = df
+        st.session_state["data_source"] = uploaded.name
+        st.success(f"✅ **{uploaded.name}** loaded — {len(df):,} rows")
+    except Exception as ex:
+        st.error(f"Failed to parse file: {ex}")
+        return
 
     # ── Show data if available ────────────────────
     if "df" not in st.session_state:
