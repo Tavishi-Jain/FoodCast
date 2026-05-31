@@ -1,13 +1,15 @@
 ---
 title: FoodCast
-emoji: 🍱
-colorFrom: green
-colorTo: orange
-sdk: docker
+emoji: 🍽️
+colorFrom: indigo
+colorTo: purple
+sdk: gradio
+sdk_version: "4.44.0"
+app_file: app.py
 pinned: false
-license: mit
-short_description: AI-powered donation forecasting platform for food banks
 ---
+
+
 
 # 🍱 FoodCast — AI Donation Forecasting Platform
 
