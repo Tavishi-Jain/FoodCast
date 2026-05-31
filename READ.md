@@ -1,12 +1,14 @@
 ---
 title: FoodCast
-emoji: 🍽️
-colorFrom: indigo
-colorTo: purple
+emoji: 🍕
+colorFrom: green
+colorTo: orange
 sdk: docker
-
 pinned: false
+license: mit
+short_description: AI-powered donation forecasting platform for food banks
 ---
+
 
 
 
