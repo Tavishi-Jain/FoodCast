@@ -33,28 +33,25 @@ def render():
             st.session_state["df"] = load_demo_data()
             st.session_state["data_source"] = "Demo Dataset"
             st.session_state.pop("raw_df", None)
-            st.session_state.pop("upload_name", None)
             st.rerun()
 
-    # FIX #15 — compare against "upload_name" (the actual filename stored on
-    # successful mapping), not "data_source" which can be "Demo Dataset" or
-    # any other string unrelated to the filename.
+    # ── Process upload — only if new file ────────
     if uploaded:
-        stored_upload_name = st.session_state.get("upload_name", "")
-        if uploaded.name != stored_upload_name or "raw_df" not in st.session_state:
+        current_source = st.session_state.get("data_source", "")
+        if uploaded.name != current_source:
             try:
                 raw_df = pd.read_csv(uploaded)
-                st.session_state["raw_df"]      = raw_df
+                st.session_state["raw_df"] = raw_df
                 st.session_state["upload_name"] = uploaded.name
-                # Clear any previously loaded df so column mapping is shown
                 st.session_state.pop("df", None)
             except Exception as ex:
                 st.error(f"Failed to read file: {ex}")
                 return
 
+    # ── Column mapping UI ─────────────────────────
     if "raw_df" in st.session_state and "df" not in st.session_state:
         raw_df = st.session_state["raw_df"]
-        cols   = raw_df.columns.tolist()
+        cols = raw_df.columns.tolist()
 
         st.markdown("---")
         st.markdown("### 🗂️ Map Your Columns")
@@ -88,7 +85,6 @@ def render():
                     rename_map[category_col] = "category"
                 df = df.rename(columns=rename_map)
 
-                # FIX #5 — removed deprecated infer_datetime_format
                 df["date"] = pd.to_datetime(df["date"], errors="coerce")
                 df["amount"] = pd.to_numeric(
                     df["amount"].astype(str).str.replace(r"[^\d.]", "", regex=True),
@@ -105,7 +101,7 @@ def render():
                     return
 
                 df = df.sort_values("date").reset_index(drop=True)
-                st.session_state["df"]          = df
+                st.session_state["df"] = df
                 st.session_state["data_source"] = st.session_state.get("upload_name", "Uploaded CSV")
                 st.session_state.pop("raw_df", None)
 
@@ -120,6 +116,7 @@ def render():
                 st.error(f"Mapping failed: {ex}")
                 return
 
+    # ── Show data if available ────────────────────
     if "df" not in st.session_state:
         st.markdown("""
         <div style="text-align:center;padding:60px;color:rgba(255,255,255,0.35)">
@@ -133,18 +130,12 @@ def render():
     st.markdown("---")
 
     metrics = summary_metrics(df)
-
-    # FIX #8 — show notice when donor count is estimated, not from real data
-    if metrics.get("donors_estimated"):
-        st.info("ℹ️ No **donors** column found — donor counts are estimated (rows × 35). "
-                "Add a `donors` column to your CSV for accurate donor analytics.")
-
     c1, c2, c3, c4 = st.columns(4)
     cards = [
-        (c1, "Total Raised",   format_currency(metrics["total"]),          "💰", ""),
-        (c2, "Total Donors",   f'{int(metrics["total_donors"]):,}{"*" if metrics.get("donors_estimated") else ""}', "👥", ""),
-        (c3, "Avg per Donor",  format_currency(metrics["avg_donation"]),   "🎯", ""),
-        (c4, "Peak Value",     format_currency(metrics["peak_amount"]),    "🚀", ""),
+        (c1, "Total Raised", format_currency(metrics["total"]), "💰", ""),
+        (c2, "Total Donors", f'{int(metrics["total_donors"]):,}', "👥", ""),
+        (c3, "Avg per Donor", format_currency(metrics["avg_donation"]), "🎯", ""),
+        (c4, "Peak Value", format_currency(metrics["peak_amount"]), "🚀", ""),
     ]
     for col, label, val, icon, delta in cards:
         with col:
@@ -175,5 +166,7 @@ def render():
     if st.button("🔄 Re-map columns / Upload new file"):
         st.session_state.pop("df", None)
         st.session_state.pop("raw_df", None)
-        st.session_state.pop("upload_name", None)
         st.rerun()
+
+
+   
