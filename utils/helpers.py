@@ -24,12 +24,8 @@ def load_demo_data() -> pd.DataFrame:
     return df.sort_values("date").reset_index(drop=True)
 
 
-# FIX #11 — Currency symbol helper reads from session_state
-def cur() -> str:
-    """Return the active currency symbol selected by the user."""
-    return st.session_state.get("currency_symbol", "₹")
-
-
+# ── Column name aliases ────────────────────────────────────────────────────────
+# Maps internal name → list of possible column names in uploaded CSVs
 COLUMN_ALIASES = {
     "date": [
         "date", "order date", "transaction date", "donation date",
@@ -71,7 +67,7 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     for internal_name, aliases in COLUMN_ALIASES.items():
         if internal_name in df.columns:
-            continue
+            continue  # already correct
         for col, col_lower in lowered.items():
             if col_lower in aliases and internal_name not in col_map.values():
                 col_map[col] = internal_name
@@ -80,10 +76,11 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     if col_map:
         df = df.rename(columns=col_map)
 
-    # FIX #5 — removed deprecated infer_datetime_format parameter
+    # Parse date column if found
     if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, errors="coerce")
 
+    # Parse amount column if found
     if "amount" in df.columns and not pd.api.types.is_numeric_dtype(df["amount"]):
         df["amount"] = pd.to_numeric(df["amount"].astype(str).str.replace(r"[^\d.]", "", regex=True), errors="coerce")
 
@@ -114,13 +111,7 @@ def validate_csv(df: pd.DataFrame) -> tuple[bool, list[str]]:
     return len(errors) == 0, errors
 
 
-def format_currency(value: float, symbol: str | None = None) -> str:
-    """Format a numeric value as a currency string.
-
-    FIX #11 — symbol defaults to the session-state selection, not hardcoded ₹.
-    """
-    if symbol is None:
-        symbol = cur()
+def format_currency(value: float, symbol: str = "₹") -> str:
     if value >= 1_00_00_000:
         return f"{symbol}{value/1_00_00_000:.1f}Cr"
     elif value >= 1_00_000:
@@ -146,16 +137,7 @@ def summary_metrics(df: pd.DataFrame) -> dict:
 
     total = df2["amount"].sum()
     avg_weekly = df2.groupby(pd.Grouper(key="date", freq="W"))["amount"].sum().mean()
-
-    # FIX #8 — flag when donor count is estimated, not real
-    has_donors_col = "donors" in df2.columns
-    if has_donors_col:
-        total_donors = df2["donors"].sum()
-        donors_estimated = False
-    else:
-        total_donors = len(df2) * 35
-        donors_estimated = True
-
+    total_donors = df2["donors"].sum() if "donors" in df2.columns else len(df2) * 35
     avg_donation = total / max(total_donors, 1)
     peak_amount = df2["amount"].max()
     peak_date = df2.loc[df2["amount"].idxmax(), "date"]
@@ -170,7 +152,6 @@ def summary_metrics(df: pd.DataFrame) -> dict:
         "total": total,
         "avg_weekly": avg_weekly,
         "total_donors": total_donors,
-        "donors_estimated": donors_estimated,
         "avg_donation": avg_donation,
         "peak_amount": peak_amount,
         "peak_date": peak_date.strftime("%d %b %Y"),
