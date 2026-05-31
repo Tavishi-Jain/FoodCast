@@ -146,7 +146,9 @@ def render():
             name="Forecast",
             hovertemplate="<b>%{x|%d %b %Y}</b><br>%{y:,.0f} donors<extra>Forecast</extra>",
         ))
-        fig.update_layout(**BASE_LAYOUT, height=300,
+        layout = {k: v for k, v in BASE_LAYOUT.items() if k != 'font'}
+        fig.update_layout(**layout, height=300,
+        
                           font=dict(family=FONT_BODY, color="#fff"),
                           transition=dict(duration=400, easing="cubic-in-out"))
         fig.update_yaxes(gridcolor=GRID, tickfont=dict(color=MUTED, family=FONT_BODY))
