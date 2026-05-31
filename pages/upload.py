@@ -4,7 +4,7 @@ pages/upload.py — Upload Dashboard
 
 import streamlit as st
 import pandas as pd
-from utils.helpers import validate_csv, load_demo_data, summary_metrics, format_currency, kpi_card_html, page_header
+from utils.helpers import validate_csv, normalize_columns, load_demo_data, summary_metrics, format_currency, kpi_card_html, page_header
 
 
 def render():
