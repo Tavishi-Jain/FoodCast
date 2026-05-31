@@ -149,8 +149,8 @@ st.markdown("""
   }
   draw();
 })();
-</script>
-""", unsafe_allow_html=True)
+    </script>
+    """, unsafe_allow_html=True)
 
     # CTA buttons — FIX: use nav_target instead of directly setting nav_radio
     c1, c2, c3 = st.columns([1,1,1])
