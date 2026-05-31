@@ -10,7 +10,6 @@ from utils.helpers import validate_csv, normalize_columns, load_demo_data, summa
 def render():
     page_header("📂 Upload Dashboard", "Import your donation data or explore with our sample dataset")
 
-    # ── Upload zone ───────────────────────────────
     col1, col2 = st.columns([3, 1], gap="large")
 
     with col1:
@@ -20,16 +19,13 @@ def render():
         <div style="font-size:2.5rem;margin-bottom:8px">📁</div>
         <div style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:6px">Drop your CSV here</div>
         <div style="font-size:0.82rem;color:rgba(255,255,255,0.5)">
-            Required columns: <code>date</code>, <code>amount</code><br>
-            Optional: <code>donors</code>, <code>campaign</code>, <code>category</code>, <code>region</code>
+            Any CSV with a date column and a numeric column works!<br>
+            e.g. Order Date + Sales, donation_date + amount, ds + value
         </div>
         </div>
         """, unsafe_allow_html=True)
 
-        uploaded = st.file_uploader(
-            "Upload CSV", type=["csv"],
-            label_visibility="collapsed"
-        )
+        uploaded = st.file_uploader("Upload CSV", type=["csv"], label_visibility="collapsed")
 
     with col2:
         st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
@@ -39,24 +35,22 @@ def render():
             st.session_state["data_source"] = "Demo Dataset"
             st.success("Demo data loaded!")
 
-    # ── Process upload ────────────────────────────
     if uploaded:
-    try:
-        df = pd.read_csv(uploaded)
-        df = normalize_columns(df)   # ← add this line
-        is_valid, errors = validate_csv(df)
-        if not is_valid:
-            for e in errors:
-                st.error(e)
+        try:
+            df = pd.read_csv(uploaded)
+            df = normalize_columns(df)
+            is_valid, errors = validate_csv(df)
+            if not is_valid:
+                for e in errors:
+                    st.error(e)
+                return
+            st.session_state["df"] = df
+            st.session_state["data_source"] = uploaded.name
+            st.success(f"✅ **{uploaded.name}** loaded — {len(df):,} rows")
+        except Exception as ex:
+            st.error(f"Failed to parse file: {ex}")
             return
-        st.session_state["df"] = df
-        st.session_state["data_source"] = uploaded.name
-        st.success(f"✅ **{uploaded.name}** loaded — {len(df):,} rows")
-    except Exception as ex:
-        st.error(f"Failed to parse file: {ex}")
-        return
 
-    # ── Show data if available ────────────────────
     if "df" not in st.session_state:
         st.markdown("""
         <div style="text-align:center;padding:60px;color:rgba(255,255,255,0.35)">
@@ -67,10 +61,8 @@ def render():
         return
 
     df = st.session_state["df"]
-
     st.markdown("---")
 
-    # ── KPI summary cards ─────────────────────────
     metrics = summary_metrics(df)
     c1, c2, c3, c4 = st.columns(4)
     cards = [
@@ -85,7 +77,6 @@ def render():
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-    # ── Validation checks ─────────────────────────
     with st.expander("✅ Validation Report", expanded=False):
         checks = {
             "Date column present": "date" in df.columns,
@@ -96,10 +87,8 @@ def render():
             "Sufficient rows (≥ 10)": len(df) >= 10,
         }
         for check, passed in checks.items():
-            icon = "✅" if passed else "❌"
-            st.markdown(f"{icon} {check}")
+            st.markdown(f"{'✅' if passed else '❌'} {check}")
 
-    # ── Data preview ──────────────────────────────
     st.markdown("""
     <div class="section-title" style="margin-top:24px">Dataset Preview</div>
     <div class="section-sub">Showing first 50 rows · Source: <strong>{}</strong> · {} rows total</div>
@@ -112,12 +101,11 @@ def render():
     )
     st.dataframe(
         df[display_cols].head(50).style.format(
-            {"amount": "₹{:,.0f}", "donors": "{:,.0f}"}
-            if "amount" in display_cols else {}
+            {"amount": "₹{:,.0f}", "donors": "{:,.0f}"} if "amount" in display_cols else {}
         ),
         use_container_width=True, height=320
     )
 
-    # ── Column stats ──────────────────────────────
     st.markdown("### 📊 Column Statistics")
     st.dataframe(df.describe().style.format("{:.1f}"), use_container_width=True)
+    
