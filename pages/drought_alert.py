@@ -61,7 +61,7 @@ def render():
     monthly = drought.get("monthly", aggregate_monthly(df))
     worst   = min(alerts, key=lambda x: x["pct_drop"], default=None)
 
-    sym = cur()
+    sym = "$"
     c1, c2, c3, c4 = st.columns(4)
     for col, label, val, icon_str in [
         (c1, "Alert Periods",    str(len(alerts)),                                   "🚨"),
