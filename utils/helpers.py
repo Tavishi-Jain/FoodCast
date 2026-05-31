@@ -8,6 +8,10 @@ import numpy as np
 import io
 from pathlib import Path
 
+def cur(value):
+    """Shorthand currency formatter."""
+    return format_currency(value)
+
 
 def load_css() -> None:
     """Inject custom CSS from assets/style.css."""
