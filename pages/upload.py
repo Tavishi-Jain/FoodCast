@@ -85,7 +85,7 @@ def render():
                 df = df.rename(columns=rename_map)
 
                 # Parse date and amount
-                df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, errors="coerce")
+                df["date"] = pd.to_datetime(df["date"], errors="coerce")
                 df["amount"] = pd.to_numeric(
                     df["amount"].astype(str).str.replace(r"[^\d.]", "", regex=True),
                     errors="coerce"
