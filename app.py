@@ -108,52 +108,54 @@ with st.sidebar:
 
 
 # ── Landing Page ──────────────────────────────────
-st.markdown("""
-<div class="hero-gradient" style="position:relative;overflow:hidden">
-  <canvas id="particles" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.25"></canvas>
-  <div class="hero-badge">🌱 AI-Powered Social Impact Analytics</div>
-  <h1 class="hero-title">Predict. Plan.<br>Maximise Impact.</h1>
-  <p class="hero-sub">
-    FoodCast uses machine learning to help NGOs, CSR teams, and fundraisers
-    forecast donations, detect droughts, and time campaigns for maximum ROI.
-  </p>
-</div>
-<script>
-(function(){
-  const c = document.getElementById('particles');
-  if(!c) return;
-  const ctx = c.getContext('2d');
-  function resize(){ c.width = c.parentElement.offsetWidth; c.height = c.parentElement.offsetHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-  const pts = Array.from({length:55}, () => ({
-    x: Math.random()*c.width, y: Math.random()*c.height,
-    vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5,
-    r: Math.random()*2+1
-  }));
-  function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    pts.forEach(p => {
-      p.x+=p.vx; p.y+=p.vy;
-      if(p.x<0||p.x>c.width) p.vx*=-1;
-      if(p.y<0||p.y>c.height) p.vy*=-1;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28);
-      ctx.fillStyle='#00C897'; ctx.fill();
-    });
-    pts.forEach((a,i) => pts.slice(i+1).forEach(b => {
-      const dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
-      if(d<100){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle=`rgba(0,200,151,${0.15*(1-d/100)})`; ctx.lineWidth=0.8; ctx.stroke(); }
-    }));
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
+def _render_landing():
+    # Hero with particle canvas
+    st.markdown("""
+    <div class="hero-gradient" style="position:relative;overflow:hidden">
+      <canvas id="particles" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.25"></canvas>
+      <div class="hero-badge">🌱 AI-Powered Social Impact Analytics</div>
+      <h1 class="hero-title">Predict. Plan.<br>Maximise Impact.</h1>
+      <p class="hero-sub">
+        FoodCast uses machine learning to help NGOs, CSR teams, and fundraisers
+        forecast donations, detect droughts, and time campaigns for maximum ROI.
+      </p>
+    </div>
+    <script>
+    (function(){
+      const c = document.getElementById('particles');
+      if(!c) return;
+      const ctx = c.getContext('2d');
+      function resize(){ c.width = c.parentElement.offsetWidth; c.height = c.parentElement.offsetHeight; }
+      resize();
+      window.addEventListener('resize', resize);
+      const pts = Array.from({length:55}, () => ({
+        x: Math.random()*c.width, y: Math.random()*c.height,
+        vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5,
+        r: Math.random()*2+1
+      }));
+      function draw(){
+        ctx.clearRect(0,0,c.width,c.height);
+        pts.forEach(p => {
+          p.x+=p.vx; p.y+=p.vy;
+          if(p.x<0||p.x>c.width) p.vx*=-1;
+          if(p.y<0||p.y>c.height) p.vy*=-1;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28);
+          ctx.fillStyle='#00C897'; ctx.fill();
+        });
+        pts.forEach((a,i) => pts.slice(i+1).forEach(b => {
+          const dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+          if(d<100){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+            ctx.strokeStyle=`rgba(0,200,151,${0.15*(1-d/100)})`; ctx.lineWidth=0.8; ctx.stroke(); }
+        }));
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
     </script>
     """, unsafe_allow_html=True)
 
-    # CTA buttons — FIX: use nav_target instead of directly setting nav_radio
-    c1, c2, c3 = st.columns([1,1,1])
+    # CTA buttons
+    c1, c2, c3 = st.columns([1, 1, 1])
     with c1:
         if st.button("📂 Upload Your Data", use_container_width=True):
             st.session_state["nav_target"] = "📂  Upload Dashboard"
@@ -175,12 +177,12 @@ st.markdown("""
     st.markdown('<div style="text-align:center;margin-bottom:32px"><span style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em">Platform Capabilities</span></div>', unsafe_allow_html=True)
 
     features = [
-        ("📈", "Donation Forecasting",     "ARIMA, Prophet, XGBoost & LSTM models predict weekly/monthly donation volumes with confidence intervals."),
-        ("🚨", "Drought Alert System",      "Automatic Z-score detection flags donation dry spells before they hurt your campaigns."),
-        ("🎉", "Seasonal Intelligence",     "Festival spike detection & campaign calendar to maximise ROI during Diwali, Christmas, Holi & more."),
-        ("👥", "Donor Churn Prediction",    "Identify at-risk donors before they lapse. Retention forecasting with personalised outreach triggers."),
-        ("🎯", "Campaign Predictor",        "Random Forest model scores your campaign setup before launch — budget, timing, duration & more."),
-        ("🏆", "Model Benchmarking",        "Compare RMSE, MAE & MAPE across all models. Always deploy the best-performing algorithm."),
+        ("📈", "Donation Forecasting",  "ARIMA, Prophet, XGBoost & LSTM models predict weekly/monthly donation volumes with confidence intervals."),
+        ("🚨", "Drought Alert System",  "Automatic Z-score detection flags donation dry spells before they hurt your campaigns."),
+        ("🎉", "Seasonal Intelligence", "Festival spike detection & campaign calendar to maximise ROI during Diwali, Christmas, Holi & more."),
+        ("👥", "Donor Churn Prediction","Identify at-risk donors before they lapse. Retention forecasting with personalised outreach triggers."),
+        ("🎯", "Campaign Predictor",    "Random Forest model scores your campaign setup before launch — budget, timing, duration & more."),
+        ("🏆", "Model Benchmarking",    "Compare RMSE, MAE & MAPE across all models. Always deploy the best-performing algorithm."),
     ]
 
     cols = st.columns(3)
@@ -218,11 +220,11 @@ st.markdown("""
     st.markdown('<div style="text-align:center;margin-bottom:24px"><span style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em">Who Is This For?</span></div>', unsafe_allow_html=True)
 
     users = [
-        ("🏛️", "NGOs & Non-profits",        "Forecast grant cycles, donor campaigns, and annual fund drives"),
-        ("🏢", "CSR Teams",                 "Report giving trends to leadership with data-backed projections"),
-        ("🕌", "Religious Organisations",    "Plan Zakat, tithe, and festival collection campaigns with precision"),
-        ("🚀", "Individual Fundraisers",     "Know when to push your campaign for maximum donor engagement"),
-        ("💻", "Crowdfunding Platforms",     "Integrate FoodCast APIs to power smart campaign recommendations"),
+        ("🏛️", "NGOs & Non-profits",     "Forecast grant cycles, donor campaigns, and annual fund drives"),
+        ("🏢", "CSR Teams",              "Report giving trends to leadership with data-backed projections"),
+        ("🕌", "Religious Organisations","Plan Zakat, tithe, and festival collection campaigns with precision"),
+        ("🚀", "Individual Fundraisers", "Know when to push your campaign for maximum donor engagement"),
+        ("💻", "Crowdfunding Platforms", "Integrate FoodCast APIs to power smart campaign recommendations"),
     ]
 
     for icon, title, desc in users:
@@ -265,3 +267,7 @@ elif page_key == "campaign_predictor":
     campaign_predictor.render()
 elif page_key == "model_comparison":
     model_comparison.render()
+   
+       
+   
+  
