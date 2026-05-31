@@ -133,7 +133,7 @@ def render():
             rmse    = row["RMSE"].values[0] if len(row) else 0
             is_best = name == best_row["Model"]
             border  = f"border:1.5px solid {info['color']}60" if is_best else "border:1px solid rgba(255,255,255,0.08)"
-            placeholder_note = '<div style="margin-top:4px;font-size:0.72rem;color:#FFC857">⚠️ Placeholder model</div>' if row["Is Placeholder"].values[0] if len(row) else False else ""
+            placeholder_note = '<div style="margin-top:4px;font-size:0.72rem;color:#FFC857">⚠️ Placeholder model</div>' if (len(row) and row["Is Placeholder"].values[0]) else ""
             st.markdown(f"""
             <div class="glass-card" style="{border};margin-bottom:12px">
               <div style="display:flex;justify-content:space-between;align-items:flex-start">
