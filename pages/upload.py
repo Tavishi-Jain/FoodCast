@@ -1,3 +1,4 @@
+```python
 """
 pages/upload.py — Upload Dashboard
 """
@@ -32,6 +33,7 @@ def render():
         if st.button("🗂️ Load Demo Data", use_container_width=True):
             st.session_state["df"] = load_demo_data()
             st.session_state["data_source"] = "Demo Dataset"
+            st.session_state.pop("raw_df", None)
             st.rerun()
 
     # ── Process upload ────────────────────────────
@@ -40,7 +42,6 @@ def render():
             raw_df = pd.read_csv(uploaded)
             st.session_state["raw_df"] = raw_df
             st.session_state["upload_name"] = uploaded.name
-            # Clear previous mapping when new file uploaded
             st.session_state.pop("df", None)
         except Exception as ex:
             st.error(f"Failed to read file: {ex}")
@@ -59,14 +60,14 @@ def render():
 
         with m1:
             date_col = st.selectbox("📅 Date column", options=cols,
-                index=next((i for i, c in enumerate(cols) if "date" in c.lower() or "time" in c.lower() or c.lower() == "ds"), 0))
+                index=next((i for i, c in enumerate(cols) if any(k in c.lower() for k in ["date", "time", "ds", "period", "week", "month", "day"])), 0))
         with m2:
             amount_col = st.selectbox("💰 Amount column", options=cols,
                 index=next((i for i, c in enumerate(cols) if any(k in c.lower() for k in ["amount", "sales", "revenue", "donation", "value", "price", "total"])), min(1, len(cols)-1)))
         with m3:
             donor_col_options = ["(none)"] + cols
             donor_col = st.selectbox("👥 Donors column (optional)", options=donor_col_options,
-                index=next((i+1 for i, c in enumerate(cols) if "donor" in c.lower() or "count" in c.lower()), 0))
+                index=next((i+1 for i, c in enumerate(cols) if any(k in c.lower() for k in ["donor", "count", "num"])), 0))
         with m4:
             category_col_options = ["(none)"] + cols
             category_col = st.selectbox("🏷️ Category column (optional)", options=category_col_options,
@@ -76,7 +77,6 @@ def render():
             try:
                 df = raw_df.copy()
 
-                # Rename to internal standard names
                 rename_map = {date_col: "date", amount_col: "amount"}
                 if donor_col != "(none)":
                     rename_map[donor_col] = "donors"
@@ -84,14 +84,12 @@ def render():
                     rename_map[category_col] = "category"
                 df = df.rename(columns=rename_map)
 
-                # Parse date and amount
                 df["date"] = pd.to_datetime(df["date"], errors="coerce")
                 df["amount"] = pd.to_numeric(
                     df["amount"].astype(str).str.replace(r"[^\d.]", "", regex=True),
                     errors="coerce"
                 )
 
-                # Drop rows where date or amount couldn't be parsed
                 before = len(df)
                 df = df.dropna(subset=["date", "amount"])
                 df = df[df["amount"] > 0]
@@ -104,6 +102,7 @@ def render():
                 df = df.sort_values("date").reset_index(drop=True)
                 st.session_state["df"] = df
                 st.session_state["data_source"] = st.session_state.get("upload_name", "Uploaded CSV")
+                st.session_state.pop("raw_df", None)
 
                 if before != after:
                     st.warning(f"⚠️ {before - after} rows dropped (unparseable date/amount). {after:,} rows loaded.")
@@ -165,9 +164,13 @@ def render():
     st.markdown("### 📊 Column Statistics")
     st.dataframe(df.describe().style.format("{:.2f}"), use_container_width=True)
 
-    # Option to re-map columns
     if st.button("🔄 Re-map columns / Upload new file"):
         st.session_state.pop("df", None)
         st.session_state.pop("raw_df", None)
         st.rerun()
-    
+```
+          
+            
+     
+
+
