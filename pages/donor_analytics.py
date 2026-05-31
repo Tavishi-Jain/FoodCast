@@ -146,8 +146,9 @@ def render():
             name="Forecast",
             hovertemplate="<b>%{x|%d %b %Y}</b><br>%{y:,.0f} donors<extra>Forecast</extra>",
         ))
-        layout = {k: v for k, v in BASE_LAYOUT.items() if k != 'font'}
+        layout = {k: v for k, v in BASE_LAYOUT.items() if k not in ('font', 'transition')}
         fig.update_layout(**layout, height=300,
+        
         
                           font=dict(family=FONT_BODY, color="#fff"),
                           transition=dict(duration=400, easing="cubic-in-out"))
