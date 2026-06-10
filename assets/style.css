@@ -597,3 +597,4 @@ div[style*="font-size:2rem"][style*="font-weight:700"] {
     background: rgba(10, 10, 20, 0.85) !important;
     backdrop-filter: blur(12px);
 }
+background-image: url("app/static/bg.jpg");
