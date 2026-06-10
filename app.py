@@ -22,6 +22,29 @@ st.set_page_config(
 from utils.helpers import load_css, load_demo_data
 load_css()
 
+# ── Kill Streamlit's default padding/gaps ─────────
+st.markdown("""
+<style>
+/* Remove Streamlit top padding on the main block */
+.main .block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+}
+/* Remove gap above first element */
+.main .block-container > div:first-child { margin-top: 0 !important; }
+/* Remove Streamlit element wrapper bottom margin */
+div[data-testid="element-container"] { margin-bottom: 0 !important; }
+/* Hero: tight padding, no min-height */
+.hero-wrap {
+    min-height: unset !important;
+    padding: 40px 24px 32px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 from pages import upload, forecast, donor_analytics, seasonal, drought_alert, campaign_predictor, model_comparison
 
 NAV_ITEMS = {
@@ -146,7 +169,7 @@ def _render_landing():
             st.session_state["nav_target"] = "🏆 Model Comparison"
             st.rerun()
 
-    st.markdown("<div style='height:72px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
     # STATS STRIP
     st.markdown("""
@@ -170,7 +193,7 @@ def _render_landing():
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:72px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
     # FEATURES HEADER
     st.markdown("""
@@ -201,7 +224,7 @@ def _render_landing():
             </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:72px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
     # POWERED BY AI — gradient halo section
     st.markdown("""
@@ -230,7 +253,7 @@ def _render_landing():
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:72px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
     # WHO IS THIS FOR
     st.markdown("""
