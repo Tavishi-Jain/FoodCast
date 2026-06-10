@@ -497,3 +497,33 @@ html, body, [data-testid="stAppViewContainer"] {
   }
 }
 
+/* ═══════════════════════════════════════════════════
+   STREAMLIT LAYOUT OVERRIDES — kill default padding
+   ═══════════════════════════════════════════════════ */
+
+/* Remove Streamlit's massive default top padding */
+.main .block-container {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Kill the default element top margin that causes gaps */
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlock"] > div:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Remove gap between Streamlit's inner block wrappers */
+[data-testid="element-container"] {
+  margin-bottom: 0 !important;
+}
+
+/* The hero itself: no min-height, just center with flex */
+.hero-wrap {
+  min-height: unset !important;
+  height: auto !important;
+  padding: 48px 24px 40px !important;
+}
+
