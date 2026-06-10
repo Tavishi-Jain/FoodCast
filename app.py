@@ -21,6 +21,35 @@ st.set_page_config(
 
 from utils.helpers import load_css, load_demo_data
 load_css()
+import base64
+from pathlib import Path
+
+def set_bg(image_file):
+    with open(Path(__file__).parent / "assets" / image_file, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+    st.markdown(f"""
+        <style>
+        [data-testid="stAppViewContainer"] {{
+            background-image: url("data:image/jpg;base64,{data}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        [data-testid="stAppViewContainer"]::before {{
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            z-index: 0;
+            pointer-events: none;
+        }}
+        [data-testid="stHeader"] {{
+            background: transparent !important;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+set_bg("bg.jpg")
 
 # ── Kill Streamlit's default padding/gaps ─────────
 st.markdown("""
