@@ -576,4 +576,24 @@ html, body, [data-testid="stAppViewContainer"] {
 div[style*="font-size:2rem"][style*="font-weight:700"] {
   animation: logo-pulse 2s ease-in-out infinite;
 }
+[data-testid="stAppViewContainer"] {
+    background-image: url("app/static/bg.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
 
+/* Dark overlay so content stays readable */
+[data-testid="stAppViewContainer"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 0;
+    pointer-events: none;
+}
+
+[data-testid="stSidebar"] {
+    background: rgba(10, 10, 20, 0.85) !important;
+    backdrop-filter: blur(12px);
+}
